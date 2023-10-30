@@ -1,0 +1,100 @@
+org: aquijuz
+app: auth-fiap
+service: auth-fiap
+frameworkVersion: "3"
+useDotenv: true
+
+provider:
+  httpApi:
+    cors:
+      allowedOrigins:
+        - '*'
+      allowedHeaders:
+        - Content-Type
+        - Access-Control-Allow-Origin
+        - Access-Control-Allow-Headers
+        - Access-Control-Allow-Methods
+      allowedMethods:
+        - GET
+        - POST
+        - PUT
+  logs:
+    httpApi: true
+
+  name: aws
+  runtime: nodejs18.x
+  region: us-east-1
+  stage: dev
+  iamRoleStatements:
+  - Effect: Allow
+    Action:
+      - cognito-idp:AdminInitiateAuth
+      - cognito-idp:AdminCreateUser
+      - cognito-idp:AdminSetUserPassword
+    Resource: '*'
+ 
+  environment:
+    USER_POOL_ID: ${env:USER_POOL_ID}
+  #   ACCESS_KEY_ID: ${param:ACCESS_KEY_ID}
+  #   SECRET_ACCESS_KEY: ${param:SECRET_ACCESS_KEY}
+
+resources:
+  Resources:
+    CognitoUserPool:
+      Type: AWS::Cognito::UserPool
+      Properties:
+        UserPoolName: user-pool-teste
+        Schema:
+          - Name: email
+            Required: true
+            Mutable: false
+            AttributeDataType: String
+          - Name: name
+            Required: true
+            Mutable: false
+            AttributeDataType: String
+        Policies:
+          PasswordPolicy:
+            MinimumLength: 6
+        UsernameAttributes:
+          - email
+        AutoVerifiedAttributes:
+          - email
+    CognitoUserClient:
+      Type: AWS::Cognito::UserPoolClient
+      Properties:
+        ClientName: user-pool-teste-client
+        GenerateSecret: false
+        UserPoolId:
+          Ref: CognitoUserPool
+        AccessTokenValidity: 5
+        IdTokenValidity: 5
+        ExplicitAuthFlows:
+          - "ADMIN_NO_SRP_AUTH"
+
+functions:
+  signUpUser:
+    handler: src/functions/signUp.signUpUser
+    events:
+      - httpApi:
+          path: /api/signup
+          method: post
+
+  # auth:
+  #   handler: src/functions/auth.handler
+    
+  # signInUser:
+  #   handler: src/functions/signIn.handler
+  #   events:
+  #     - httpApi:
+  #         path: /api/signin
+  #         method: post
+  #         authorizer: auth
+
+custom:
+  serverless-offline:
+    httpPort: 3001
+
+plugins:
+  - serverless-offline
+  - serverless-plugin-typescript
