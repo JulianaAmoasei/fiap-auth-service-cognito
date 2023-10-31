@@ -1,4 +1,4 @@
-module.exports = (statusCode: any, body: any, headers = {}) => ({
+export default (statusCode: any, body: any, headers = {}) => ({
   statusCode,
   body: JSON.stringify(body),
   headers: {

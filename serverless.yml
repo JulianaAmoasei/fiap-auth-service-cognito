@@ -1,6 +1,6 @@
 org: aquijuz
-app: auth-fiap
-service: auth-fiap
+app: auth-service-cognito
+service: auth-service-cognito
 frameworkVersion: "3"
 useDotenv: true
 
@@ -34,7 +34,7 @@ provider:
     Resource: '*'
  
   environment:
-    USER_POOL_ID: ${env:USER_POOL_ID}
+    USER_POOL_ID: ${param:USER_POOL_ID}
   #   ACCESS_KEY_ID: ${param:ACCESS_KEY_ID}
   #   SECRET_ACCESS_KEY: ${param:SECRET_ACCESS_KEY}
 
