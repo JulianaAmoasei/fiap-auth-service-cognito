@@ -1,29 +1,26 @@
-import {
-  CognitoIdentityProviderClient,
-  AdminCreateUserCommand,
-} from "@aws-sdk/client-cognito-identity-provider";
 import sendResponse from "../utils/sendResponse";
-import { CognitoInputType } from "types/CognitoInputType";
 import { createToken } from "../middleware/auth/createToken";
+import { createUser } from "../middleware/provider/createUser";
+import { confirmUser } from "../middleware/provider/confirmUser";
+import { validateCPF } from "../utils/validateCPF";
 
 async function signUpUser (event: any) {
   const { cpf } = JSON.parse(event.body);
-  
-  const input: CognitoInputType = {
-    UserPoolId: process.env.USER_POOL_ID,
-    Username: cpf,
-    MessageAction: "SUPPRESS",
-  };
-
+  if (!validateCPF(cpf)) {
+    throw new Error('CPF inválido');
+  }
   try {
-    const client = new CognitoIdentityProviderClient({region: 'us-east-1'});    
-    const command = new AdminCreateUserCommand(input);
-    const response = await client.send(command);
-    const token = createToken(response.User?.Username);    
+    await confirmUser(cpf);
+    const token = createToken(cpf);
     return sendResponse(200, token);
- } catch (error) {
-    console.error(error, 'deu algum erro');
-    return sendResponse(400, error);
+  } catch (error: unknown) {
+    if (error instanceof Error && error.name === "UserNotFoundException") {
+      await createUser(cpf);
+      const token = createToken(cpf);
+      return sendResponse(200, token);
+    } else {
+      return sendResponse(400, error);
+    }
   }
 };
 
