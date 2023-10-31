@@ -35,8 +35,6 @@ provider:
  
   environment:
     USER_POOL_ID: ${param:USER_POOL_ID}
-  #   ACCESS_KEY_ID: ${param:ACCESS_KEY_ID}
-  #   SECRET_ACCESS_KEY: ${param:SECRET_ACCESS_KEY}
 
 resources:
   Resources:

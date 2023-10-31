@@ -4,6 +4,7 @@ import {
 } from "@aws-sdk/client-cognito-identity-provider";
 import sendResponse from "../utils/sendResponse";
 import { CognitoInputType } from "types/CognitoInputType";
+import { createToken } from "../middleware/auth/createToken";
 
 async function signUpUser (event: any) {
   const { cpf } = JSON.parse(event.body);
@@ -18,7 +19,8 @@ async function signUpUser (event: any) {
     const client = new CognitoIdentityProviderClient({region: 'us-east-1'});    
     const command = new AdminCreateUserCommand(input);
     const response = await client.send(command);
-    return sendResponse(200, { response });
+    const token = createToken(response.User?.Username);    
+    return sendResponse(200, token);
  } catch (error) {
     console.error(error, 'deu algum erro');
     return sendResponse(400, error);
