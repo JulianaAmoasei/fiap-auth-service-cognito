@@ -1,4 +1,3 @@
-org: aquijuz
 app: auth-service-cognito
 service: auth-service-cognito
 frameworkVersion: "3"
@@ -35,19 +34,15 @@ provider:
     Resource: '*'
  
   environment:
-    USER_POOL_ID: ${param:USER_POOL_ID}
+    CLIENTES_POOL_ID: ${self:custom.CLIENTES_POOL_ID}
 
 resources:
   Resources:
     CognitoUserPool:
       Type: AWS::Cognito::UserPool
       Properties:
-        UserPoolName: user-pool-teste
+        UserPoolName: clientes-pool
         Schema:
-          - Name: email
-            Required: true
-            Mutable: false
-            AttributeDataType: String
           - Name: name
             Required: true
             Mutable: false
@@ -62,7 +57,7 @@ resources:
     CognitoUserClient:
       Type: AWS::Cognito::UserPoolClient
       Properties:
-        ClientName: user-pool-teste-client
+        ClientName: clientes-pool-client
         GenerateSecret: false
         UserPoolId:
           Ref: CognitoUserPool
@@ -77,6 +72,13 @@ functions:
     events:
       - httpApi:
           path: /api/signup
+          method: post
+  
+  test:
+    handler: src/functions/signUp.signUpUser
+    events:
+      - httpApi:
+          path: /api/teste
           method: post
 
   # auth:
@@ -93,6 +95,7 @@ functions:
 custom:
   serverless-offline:
     httpPort: 3001
+  CLIENTES_POOL_ID: ${ssm:/pools/client}
 
 plugins:
   - serverless-offline

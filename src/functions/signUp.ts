@@ -13,13 +13,13 @@ async function signUpUser (event: any) {
     await confirmUser(cpf);
     const token = createToken(cpf);
     return sendResponse(200, token);
-  } catch (error: unknown) {
+  } catch (error: any) {
     if (error instanceof Error && error.name === "UserNotFoundException") {
       await createUser(cpf);
       const token = createToken(cpf);
       return sendResponse(200, token);
     } else {
-      return sendResponse(400, error);
+      throw new Error(error);
     }
   }
 };
