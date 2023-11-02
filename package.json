@@ -6,7 +6,10 @@
   "dependencies": {
     "@aws-sdk/client-cognito-identity-provider": "^3.438.0",
     "@aws-sdk/client-secrets-manager": "^3.441.0",
+    "@types/serverless": "^3.12.17",
+    "amazon-cognito-identity-js": "^6.3.6",
     "aws-jwt-verify": "^4.0.0",
+    "aws-sdk": "^2.1486.0",
     "bcryptjs": "^2.4.3",
     "dotenv": "^16.3.1",
     "jsonwebtoken": "^7.4.3"
@@ -23,6 +26,8 @@
     "@typescript-eslint/eslint-plugin": "^6.9.0",
     "@typescript-eslint/parser": "^6.9.0",
     "eslint": "^8.52.0",
+    "eslint-plugin-simple-import-sort": "^10.0.0",
+    "eslint-plugin-unused-imports": "^3.0.0",
     "serverless-offline": "^13.2.0",
     "serverless-plugin-typescript": "^2.1.5",
     "ts-node": "^10.9.1",

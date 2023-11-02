@@ -6,10 +6,8 @@ async function confirmUser(cpf:any) {
     UserPoolId: process.env.CLIENTES_POOL_ID,
     Username: cpf,
   };
-
   const command = new AdminGetUserCommand(input);
   const response = await client.send(command);
-  console.log(response);
   return response;  
 }
 

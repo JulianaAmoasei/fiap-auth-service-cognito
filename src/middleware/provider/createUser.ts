@@ -5,9 +5,10 @@ import {
 import { CognitoInputType } from "types/CognitoInputType";
 
 async function createUser (cpf:any) {
- 
+
   const input: CognitoInputType = {
     UserPoolId: process.env.CLIENTES_POOL_ID,
+    TemporaryPassword: '123456',
     Username: cpf,
     MessageAction: "SUPPRESS",
   };

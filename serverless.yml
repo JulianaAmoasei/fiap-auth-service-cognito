@@ -35,36 +35,38 @@ provider:
  
   environment:
     CLIENTES_POOL_ID: ${self:custom.CLIENTES_POOL_ID}
+    CLIENTES_POOL_CLIENT_ID: ${self:custom.CLIENTES_POOL_CLIENT_ID}
+    CLIENTES_IDENTITY_POOL_ID: ${self:custom.CLIENTES_IDENTITY_POOL_ID}
 
-resources:
-  Resources:
-    CognitoUserPool:
-      Type: AWS::Cognito::UserPool
-      Properties:
-        UserPoolName: clientes-pool
-        Schema:
-          - Name: name
-            Required: true
-            Mutable: false
-            AttributeDataType: String
-        Policies:
-          PasswordPolicy:
-            MinimumLength: 6
-        UsernameAttributes:
-          - email
-        AutoVerifiedAttributes:
-          - email
-    CognitoUserClient:
-      Type: AWS::Cognito::UserPoolClient
-      Properties:
-        ClientName: clientes-pool-client
-        GenerateSecret: false
-        UserPoolId:
-          Ref: CognitoUserPool
-        AccessTokenValidity: 5
-        IdTokenValidity: 5
-        ExplicitAuthFlows:
-          - "ADMIN_NO_SRP_AUTH"
+# resources:
+#   Resources:
+#     CognitoUserPool:
+#       Type: AWS::Cognito::UserPool
+#       Properties:
+#         UserPoolName: clientes-pool
+#         Schema:
+#           - Name: name
+#             Required: true
+#             Mutable: false
+#             AttributeDataType: String
+#         Policies:
+#           PasswordPolicy:
+#             MinimumLength: 6
+#         UsernameAttributes:
+#           - email
+#         AutoVerifiedAttributes:
+#           - email
+#     CognitoUserClient:
+#       Type: AWS::Cognito::UserPoolClient
+#       Properties:
+#         ClientName: clientes-pool-client
+#         GenerateSecret: false
+#         UserPoolId:
+#           Ref: CognitoUserPool
+#         AccessTokenValidity: 5
+#         IdTokenValidity: 5
+#         # ExplicitAuthFlows:
+#         #   - "ADMIN_NO_SRP_AUTH"
 
 functions:
   signUpUser:
@@ -72,13 +74,6 @@ functions:
     events:
       - httpApi:
           path: /api/signup
-          method: post
-  
-  test:
-    handler: src/functions/signUp.signUpUser
-    events:
-      - httpApi:
-          path: /api/teste
           method: post
 
   # auth:
@@ -96,6 +91,8 @@ custom:
   serverless-offline:
     httpPort: 3001
   CLIENTES_POOL_ID: ${ssm:/pools/client}
+  CLIENTES_POOL_CLIENT_ID: ${ssm:/pools/client/client}
+  CLIENTES_IDENTITY_POOL_ID: ${ssm:/pools/identity/client}
 
 plugins:
   - serverless-offline
