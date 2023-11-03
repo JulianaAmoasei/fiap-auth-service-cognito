@@ -7,12 +7,13 @@ import {
 } from 'amazon-cognito-identity-js';
 
 import { AuthenticationDataType, IPoolData } from '../../types/CognitoInputTypes';
+import { encryptPassword } from '../auth/encryptPassword';
 import { getToken } from '../auth/getToken';
 
 async function authenticateCognitoUser(cpf: string) {
   const authenticationData: AuthenticationDataType = {
     Username: cpf,
-    Password: '123456',
+    Password: encryptPassword(cpf),
   };
 
   const authenticationDetails = new AuthenticationDetails(authenticationData);
@@ -48,7 +49,7 @@ async function authenticateCognitoUser(cpf: string) {
         sessionUserAttributes = userAttributes;
   
         cognitoUser.completeNewPasswordChallenge(
-          '123456',
+          encryptPassword(cpf),
           sessionUserAttributes,
           {
             onSuccess: async (_, __) => {

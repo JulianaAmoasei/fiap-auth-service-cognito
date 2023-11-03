@@ -13,11 +13,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.authenticateCognitoUser = void 0;
 const amazon_cognito_identity_js_1 = require("amazon-cognito-identity-js");
 const getToken_1 = require("../auth/getToken");
+const encryptPassword_1 = require("../auth/encryptPassword");
 function authenticateCognitoUser(cpf) {
     return __awaiter(this, void 0, void 0, function* () {
         const authenticationData = {
             Username: cpf,
-            Password: '123456',
+            Password: (0, encryptPassword_1.encryptPassword)(cpf),
         };
         const authenticationDetails = new amazon_cognito_identity_js_1.AuthenticationDetails(authenticationData);
         const poolData = {
@@ -45,7 +46,7 @@ function authenticateCognitoUser(cpf) {
                 newPasswordRequired: (userAttributes) => {
                     delete userAttributes.email_verified;
                     sessionUserAttributes = userAttributes;
-                    cognitoUser.completeNewPasswordChallenge('123456', sessionUserAttributes, {
+                    cognitoUser.completeNewPasswordChallenge((0, encryptPassword_1.encryptPassword)(cpf), sessionUserAttributes, {
                         onSuccess: (_, __) => __awaiter(this, void 0, void 0, function* () {
                             resolve(authenticateCognitoUser(cpf));
                         }),

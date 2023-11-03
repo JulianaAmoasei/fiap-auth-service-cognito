@@ -11,12 +11,13 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.createUser = void 0;
 const client_cognito_identity_provider_1 = require("@aws-sdk/client-cognito-identity-provider");
+const encryptPassword_1 = require("../auth/encryptPassword");
 function createUser(cpf) {
     var _a;
     return __awaiter(this, void 0, void 0, function* () {
         const input = {
             UserPoolId: process.env.CLIENTES_POOL_ID || '',
-            TemporaryPassword: '123456',
+            TemporaryPassword: (0, encryptPassword_1.encryptPassword)(cpf),
             Username: cpf,
             MessageAction: 'SUPPRESS',
         };
