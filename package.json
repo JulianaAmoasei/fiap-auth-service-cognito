@@ -6,7 +6,6 @@
   "dependencies": {
     "@aws-sdk/client-cognito-identity-provider": "^3.438.0",
     "@aws-sdk/client-secrets-manager": "^3.441.0",
-    "@types/serverless": "^3.12.17",
     "amazon-cognito-identity-js": "^6.3.6",
     "aws-jwt-verify": "^4.0.0",
     "aws-sdk": "^2.1486.0",
@@ -16,9 +15,10 @@
   },
   "scripts": {
     "build": "npx tsc && npx tsc-alias -p tsconfig.json",
-    "lint": "eslint . --ext .ts"
+    "lint": "eslint . --ext .ts --fix"
   },
   "devDependencies": {
+    "@types/serverless": "^3.12.17",
     "@types/aws-lambda": "^8.10.125",
     "@types/bcryptjs": "^2.4.5",
     "@types/jsonwebtoken": "^9.0.4",

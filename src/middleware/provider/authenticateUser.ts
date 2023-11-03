@@ -1,21 +1,25 @@
+/* eslint-disable @typescript-eslint/no-unused-vars*/
+
 import {
   AuthenticationDetails,
-  CognitoUserPool,
   CognitoUser,
-} from "amazon-cognito-identity-js";
+  CognitoUserPool,
+} from 'amazon-cognito-identity-js';
+
+import { AuthenticationDataType, IPoolData } from '../../types/CognitoInputTypes';
 import { getToken } from '../auth/getToken';
 
-async function authenticateCognitoUser(cpf: any) {
-  const authenticationData: any = {
+async function authenticateCognitoUser(cpf: string) {
+  const authenticationData: AuthenticationDataType = {
     Username: cpf,
-    Password: "123456",
+    Password: '123456',
   };
 
   const authenticationDetails = new AuthenticationDetails(authenticationData);
 
-  const poolData: any = {
-    UserPoolId: process.env.CLIENTES_POOL_ID,
-    ClientId: process.env.CLIENTES_POOL_CLIENT_ID,
+  const poolData: IPoolData = {
+    UserPoolId: process.env.CLIENTES_POOL_ID || '',
+    ClientId: process.env.CLIENTES_POOL_CLIENT_ID || '',
   };
 
   const userPool = new CognitoUserPool(poolData);
@@ -35,8 +39,8 @@ async function authenticateCognitoUser(cpf: any) {
           resolve(res)
         })
       },
-      onFailure: (err) => {
-        console.log("deu erro", err);
+      onFailure: (err: Error) => {
+        console.log('deu erro', err);
         reject(err);
       },
       newPasswordRequired: (userAttributes) => {
@@ -44,15 +48,15 @@ async function authenticateCognitoUser(cpf: any) {
         sessionUserAttributes = userAttributes;
   
         cognitoUser.completeNewPasswordChallenge(
-          "123456",
+          '123456',
           sessionUserAttributes,
           {
-            onSuccess: async (session: any, userConfirmationNecessary?: boolean | undefined) => {
+            onSuccess: async (_, __) => {
               resolve(authenticateCognitoUser(cpf));
-              ;
+              
             },
-            onFailure: (err: any): void => {
-              console.error("falha na criação da nova senha");
+            onFailure: (err: Error): void => {
+              console.error('falha na criação da nova senha');
               reject(err)
               ;
             }

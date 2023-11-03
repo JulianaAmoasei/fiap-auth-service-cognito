@@ -1,16 +1,17 @@
 import {
-  CognitoIdentityProviderClient,
   AdminCreateUserCommand,
-} from "@aws-sdk/client-cognito-identity-provider";
-import { CognitoInputType } from "types/CognitoInputType";
+  CognitoIdentityProviderClient,
+} from '@aws-sdk/client-cognito-identity-provider';
 
-async function createUser (cpf:any) {
+import { ICognitoInput } from '../../types/CognitoInputTypes';
 
-  const input: CognitoInputType = {
-    UserPoolId: process.env.CLIENTES_POOL_ID,
+async function createUser (cpf: string) {
+
+  const input: ICognitoInput = {
+    UserPoolId: process.env.CLIENTES_POOL_ID || '',
     TemporaryPassword: '123456',
     Username: cpf,
-    MessageAction: "SUPPRESS",
+    MessageAction: 'SUPPRESS',
   };
 
   try {
@@ -22,10 +23,10 @@ async function createUser (cpf:any) {
     } else {
       throw new Error('usuário não criado')
     }
- } catch (error:any) {
+ } catch (error: unknown) {
     console.error(error, 'deu algum erro');
-    throw new Error(error);
+    throw new Error(error as string);
   }
-};
+}
 
 export { createUser };

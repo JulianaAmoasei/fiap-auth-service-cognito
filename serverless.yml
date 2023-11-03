@@ -38,36 +38,6 @@ provider:
     CLIENTES_POOL_CLIENT_ID: ${self:custom.CLIENTES_POOL_CLIENT_ID}
     CLIENTES_IDENTITY_POOL_ID: ${self:custom.CLIENTES_IDENTITY_POOL_ID}
 
-# resources:
-#   Resources:
-#     CognitoUserPool:
-#       Type: AWS::Cognito::UserPool
-#       Properties:
-#         UserPoolName: clientes-pool
-#         Schema:
-#           - Name: name
-#             Required: true
-#             Mutable: false
-#             AttributeDataType: String
-#         Policies:
-#           PasswordPolicy:
-#             MinimumLength: 6
-#         UsernameAttributes:
-#           - email
-#         AutoVerifiedAttributes:
-#           - email
-#     CognitoUserClient:
-#       Type: AWS::Cognito::UserPoolClient
-#       Properties:
-#         ClientName: clientes-pool-client
-#         GenerateSecret: false
-#         UserPoolId:
-#           Ref: CognitoUserPool
-#         AccessTokenValidity: 5
-#         IdTokenValidity: 5
-#         # ExplicitAuthFlows:
-#         #   - "ADMIN_NO_SRP_AUTH"
-
 functions:
   signUpUser:
     handler: src/functions/signUp.signUpUser
@@ -75,17 +45,6 @@ functions:
       - httpApi:
           path: /api/signup
           method: post
-
-  # auth:
-  #   handler: src/functions/auth.handler
-    
-  # signInUser:
-  #   handler: src/functions/signIn.handler
-  #   events:
-  #     - httpApi:
-  #         path: /api/signin
-  #         method: post
-  #         authorizer: auth
 
 custom:
   serverless-offline:

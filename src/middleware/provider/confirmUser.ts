@@ -1,6 +1,6 @@
-import { CognitoIdentityProviderClient, AdminGetUserCommand } from "@aws-sdk/client-cognito-identity-provider";
+import { AdminGetUserCommand,CognitoIdentityProviderClient } from '@aws-sdk/client-cognito-identity-provider';
 
-async function confirmUser(cpf:any) {
+async function confirmUser(cpf: string) {
   const client = new CognitoIdentityProviderClient({region: 'us-east-1'});
   const input = {
     UserPoolId: process.env.CLIENTES_POOL_ID,

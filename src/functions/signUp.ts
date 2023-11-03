@@ -1,11 +1,13 @@
-import sendResponse from "../utils/sendResponse";
-import { createUser } from "../middleware/provider/createUser";
-import { confirmUser } from "../middleware/provider/confirmUser";
-import { validateCPF } from "../utils/validateCPF";
-import { authenticateCognitoUser } from "../middleware/provider/authenticateUser";
+import { APIGatewayEvent } from 'aws-lambda';
 
-async function signUpUser (event: any) {
-  const { cpf } = JSON.parse(event.body);
+import { authenticateCognitoUser } from '../middleware/provider/authenticateUser';
+import { confirmUser } from '../middleware/provider/confirmUser';
+import { createUser } from '../middleware/provider/createUser';
+import sendResponse from '../utils/sendResponse';
+import { validateCPF } from '../utils/validateCPF';
+
+async function signUpUser (event: APIGatewayEvent) {
+  const { cpf } = JSON.parse(event.body as string);
   if (!validateCPF(cpf)) {
     return sendResponse(400, 'CPF inválido');
   }
@@ -14,13 +16,13 @@ async function signUpUser (event: any) {
     await confirmUser(cpf);
     const result = await authenticateCognitoUser(cpf);
     return sendResponse(200, result);
-  } catch (error: any) {
-    if (error instanceof Error && error.name === "UserNotFoundException") {
+  } catch (error: unknown) {
+    if (error instanceof Error && error.name === 'UserNotFoundException') {
       await createUser(cpf);
       const result = await authenticateCognitoUser(cpf);
       return sendResponse(200, result);
     } else {
-      throw new Error(error);
+      throw new Error(error as string);
     }
   }
 }
