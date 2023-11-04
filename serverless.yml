@@ -37,13 +37,24 @@ provider:
     CLIENTES_POOL_ID: ${self:custom.CLIENTES_POOL_ID}
     CLIENTES_POOL_CLIENT_ID: ${self:custom.CLIENTES_POOL_CLIENT_ID}
     CLIENTES_IDENTITY_POOL_ID: ${self:custom.CLIENTES_IDENTITY_POOL_ID}
+    ADMIN_POOL_ID: ${self:custom.ADMIN_POOL_ID}
+    ADMIN_POOL_CLIENT_ID: ${self:custom.ADMIN_POOL_CLIENT_ID}
+    ADMIN_IDENTITY_POOL_ID: ${self:custom.ADMIN_IDENTITY_POOL_ID}
+
 
 functions:
-  signUpUser:
-    handler: src/functions/signUp.signUpUser
+  signUpClient:
+    handler: src/functions/signUpClient.handler
     events:
       - httpApi:
           path: /api/signup
+          method: post
+
+  signUpAdmin:
+    handler: src/functions/signUpAdmin.handler
+    events:
+      - httpApi:
+          path: /api/admin
           method: post
 
 custom:
@@ -52,6 +63,10 @@ custom:
   CLIENTES_POOL_ID: ${ssm:/pools/client}
   CLIENTES_POOL_CLIENT_ID: ${ssm:/pools/client/client}
   CLIENTES_IDENTITY_POOL_ID: ${ssm:/pools/identity/client}
+  ADMIN_POOL_ID: ${ssm:/pools/admin}
+  ADMIN_POOL_CLIENT_ID: ${ssm:/pools/admin/client}
+  ADMIN_IDENTITY_POOL_ID: ${ssm:/pools/identity/admin}
+
 
 plugins:
   - serverless-offline

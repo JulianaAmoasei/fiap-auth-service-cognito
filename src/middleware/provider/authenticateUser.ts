@@ -5,27 +5,28 @@ import {
   CognitoUser,
   CognitoUserPool,
 } from 'amazon-cognito-identity-js';
+import { UserDataUserPoolType } from 'types/UserTypes';
 
 import { AuthenticationDataType, IPoolData } from '../../types/CognitoInputTypes';
 import { encryptPassword } from '../auth/encryptPassword';
 import { getToken } from '../auth/getToken';
 
-async function authenticateCognitoUser(cpf: string) {
+async function authenticateCognitoUser(userDataPoolData: UserDataUserPoolType) {
   const authenticationData: AuthenticationDataType = {
-    Username: cpf,
-    Password: encryptPassword(cpf),
+    Username: userDataPoolData.Username,
+    Password: encryptPassword(userDataPoolData.Username),
   };
 
   const authenticationDetails = new AuthenticationDetails(authenticationData);
 
   const poolData: IPoolData = {
-    UserPoolId: process.env.CLIENTES_POOL_ID || '',
-    ClientId: process.env.CLIENTES_POOL_CLIENT_ID || '',
+    UserPoolId: userDataPoolData.UserPoolId || '',
+    ClientId: userDataPoolData.ClientId || '',
   };
 
   const userPool = new CognitoUserPool(poolData);
   const userData = {
-    Username: cpf,
+    Username: userDataPoolData.Username,
     Pool: userPool,
   };
 
@@ -36,24 +37,24 @@ async function authenticateCognitoUser(cpf: string) {
   const token = new Promise((resolve, reject) => {
     cognitoUser.authenticateUser(authenticationDetails, {
       onSuccess: (result) => {
-        getToken(result).then((res) => {
+        getToken(result, userDataPoolData.IdentityPoolId).then((res) => {
           resolve(res)
         })
       },
       onFailure: (err: Error) => {
-        console.log('deu erro', err);
+        console.error('falha na autenticação', err);
         reject(err);
       },
       newPasswordRequired: (userAttributes) => {
-        delete userAttributes.email_verified;
+        // delete userAttributes.email_verified;
         sessionUserAttributes = userAttributes;
   
         cognitoUser.completeNewPasswordChallenge(
-          encryptPassword(cpf),
-          sessionUserAttributes,
+          encryptPassword(userDataPoolData.Username),
+          null,
           {
             onSuccess: async (_, __) => {
-              resolve(authenticateCognitoUser(cpf));
+              resolve(authenticateCognitoUser(userDataPoolData));
               
             },
             onFailure: (err: Error): void => {

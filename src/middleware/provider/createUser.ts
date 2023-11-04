@@ -2,17 +2,18 @@ import {
   AdminCreateUserCommand,
   CognitoIdentityProviderClient,
 } from '@aws-sdk/client-cognito-identity-provider';
+import { UserConfirmationData } from 'types/UserTypes';
 
 import { ICognitoInput } from '../../types/CognitoInputTypes';
 import { encryptPassword } from '../auth/encryptPassword';
 
-async function createUser (cpf: string) {
+async function createUser (userData: UserConfirmationData) {
 
   const input: ICognitoInput = {
-    UserPoolId: process.env.CLIENTES_POOL_ID || '',
-    TemporaryPassword: encryptPassword(cpf),
-    Username: cpf,
-    MessageAction: 'SUPPRESS',
+    UserPoolId: userData.UserPoolId || '',
+    TemporaryPassword: encryptPassword(userData.Username),
+    Username: userData.Username,
+    MessageAction: 'SUPPRESS',  
   };
 
   try {
