@@ -10,9 +10,9 @@ async function handler(event: APIGatewayEvent) {
   const { email, password } = JSON.parse(event.body as string);
   try {
     await validateAdminData(email, password);
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error(err);
-    return sendResponse(400, {errors: err.errors});
+    return sendResponse(400, {errors: err});
   }
 
   const adminData: UserConfirmationData = {
@@ -32,9 +32,9 @@ async function handler(event: APIGatewayEvent) {
     await confirmUser(adminData);
     const result = await authenticateCognitoUser(adminPoolData);
     return sendResponse(200, result);
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error(err);
-    return sendResponse(400, { error: err.message });
+    return sendResponse(400, { error: err });
   }
 }
 
