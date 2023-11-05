@@ -1,8 +1,9 @@
 import { createHash } from 'crypto';
 
-function encryptPassword(cpf: string): string {
+function encryptPassword(userName: string): string {
+
   const hash = createHash('md5');
-  hash.update(cpf);
+  hash.update(userName);
   return hash.digest('hex');
 }
 
