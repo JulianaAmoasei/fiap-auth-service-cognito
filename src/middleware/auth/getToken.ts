@@ -1,19 +1,24 @@
+import { S3Client } from '@aws-sdk/client-s3';
+import { fromCognitoIdentityPool } from '@aws-sdk/credential-providers';
 import { CognitoUserSession } from 'amazon-cognito-identity-js';
-import * as AWS from 'aws-sdk/global';
 
-async function getToken(result: CognitoUserSession) {
-  AWS.config.region = 'us-east-1';
+const AWS_REGION = process.env.COGNITO_REGION ?? 'us-east-1';
 
-  AWS.config.credentials = new AWS.CognitoIdentityCredentials({
-    IdentityPoolId: process.env.CLIENTES_IDENTITY_POOL_ID || '',
-    Logins: {
-      [`cognito-idp.us-east-1.amazonaws.com/${process.env.CLIENTES_IDENTITY_POOL_ID}`]:
-        await result.getIdToken().getJwtToken(),
-    },
+async function getToken(result: CognitoUserSession, identityPool: string | undefined, userPoolId: string | undefined) {
+  const client = new S3Client({
+    region: AWS_REGION,
+    credentials: fromCognitoIdentityPool({
+      clientConfig: { region: AWS_REGION },
+      identityPoolId: identityPool as string,
+      logins: {
+        [`cognito-idp.${AWS_REGION}.amazonaws.com/${userPoolId}`]: result.getIdToken().getJwtToken(),
+      },
+    })
   });
-
-  const accessToken = result.getAccessToken().getJwtToken();  
+  await client.config.credentials();
+  const accessToken = result.getAccessToken().getJwtToken();
   return accessToken;
+
 }
 
 export { getToken };
