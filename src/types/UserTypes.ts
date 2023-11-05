@@ -14,6 +14,7 @@ export type UserConfirmationData = {
 
 export type UserDataUserPoolType = {
   Username: string;
+  Password?: string;
   UserPoolId: string | undefined;
   ClientId: string | undefined;
   IdentityPoolId: string | undefined;

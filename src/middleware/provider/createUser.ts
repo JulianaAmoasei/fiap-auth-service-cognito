@@ -7,6 +7,8 @@ import { UserConfirmationData } from 'types/UserTypes';
 import { ICognitoInput } from '../../types/CognitoInputTypes';
 import { encryptPassword } from '../auth/encryptPassword';
 
+const AWS_REGION = process.env.COGNITO_REGION ?? 'us-east-1';
+
 async function createUser (userData: UserConfirmationData) {
 
   const input: ICognitoInput = {
@@ -17,7 +19,7 @@ async function createUser (userData: UserConfirmationData) {
   };
 
   try {
-    const client = new CognitoIdentityProviderClient({region: 'us-east-1'});    
+    const client = new CognitoIdentityProviderClient({region: AWS_REGION});    
     const command = new AdminCreateUserCommand(input);
     const response = await client.send(command);
     if (response.User?.Username) {

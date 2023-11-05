@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars*/
 
 import {
   AuthenticationDetails,
@@ -14,7 +13,7 @@ import { getToken } from '../auth/getToken';
 async function authenticateCognitoUser(userDataPoolData: UserDataUserPoolType) {
   const authenticationData: AuthenticationDataType = {
     Username: userDataPoolData.Username,
-    Password: encryptPassword(userDataPoolData.Username),
+    Password: userDataPoolData.Password ? userDataPoolData.Password : encryptPassword(userDataPoolData.Username),
   };
 
   const authenticationDetails = new AuthenticationDetails(authenticationData);
@@ -32,35 +31,37 @@ async function authenticateCognitoUser(userDataPoolData: UserDataUserPoolType) {
 
   const cognitoUser = new CognitoUser(userData);
 
-  let sessionUserAttributes;
-
   const token = new Promise((resolve, reject) => {
     cognitoUser.authenticateUser(authenticationDetails, {
-      onSuccess: (result) => {
-        getToken(result, userDataPoolData.IdentityPoolId).then((res) => {
-          resolve(res)
-        })
+      onSuccess: async (result) => {
+        try {
+          const res = await getToken(result, userDataPoolData.IdentityPoolId, userDataPoolData.UserPoolId);
+          resolve(res);
+
+        } catch (err) {
+          console.error('falha na autenticação', err);
+          reject(err);
+        }
       },
       onFailure: (err: Error) => {
         console.error('falha na autenticação', err);
         reject(err);
       },
-      newPasswordRequired: (userAttributes) => {
+      newPasswordRequired: () => {
         // delete userAttributes.email_verified;
-        sessionUserAttributes = userAttributes;
-  
+
         cognitoUser.completeNewPasswordChallenge(
-          encryptPassword(userDataPoolData.Username),
+          authenticationData.Password,
           null,
           {
-            onSuccess: async (_, __) => {
+            onSuccess: async () => {
               resolve(authenticateCognitoUser(userDataPoolData));
-              
+
             },
             onFailure: (err: Error): void => {
               console.error('falha na criação da nova senha');
               reject(err)
-              ;
+                ;
             }
           }
         );

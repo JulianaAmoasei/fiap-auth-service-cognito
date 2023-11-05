@@ -1,8 +1,10 @@
 import { AdminGetUserCommand,CognitoIdentityProviderClient } from '@aws-sdk/client-cognito-identity-provider';
 import { UserConfirmationData } from 'types/UserTypes';
 
+const AWS_REGION = process.env.COGNITO_REGION ?? 'us-east-1';
+
 async function confirmUser(userData: UserConfirmationData) {
-  const client = new CognitoIdentityProviderClient({region: 'us-east-1'});
+  const client = new CognitoIdentityProviderClient({region: AWS_REGION});
   const input = {
     UserPoolId: userData.UserPoolId,
     Username: userData.Username,

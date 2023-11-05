@@ -2,14 +2,9 @@ import { object, string } from 'yup';
 
 const adminSchema = object({
   email: string().email().required(),
+  password: string().required(),
 });
 
-export default function validateAdminData (email: string): boolean {
-  try {
-    
-    adminSchema.validate({ email });
-    return true;
-  } catch (error) {
-    return false;
-  }
+export default async function validateAdminData(email: string, password: string) {
+  await adminSchema.validate({ email, password });
 }

@@ -22,6 +22,7 @@ provider:
 
   name: aws
   runtime: nodejs18.x
+  timeout: 30
   region: us-east-1
   stage: dev
   iamRoleStatements:
@@ -63,6 +64,7 @@ custom:
   CLIENTES_POOL_ID: ${ssm:/pools/client}
   CLIENTES_POOL_CLIENT_ID: ${ssm:/pools/client/client}
   CLIENTES_IDENTITY_POOL_ID: ${ssm:/pools/identity/client}
+  COGNITO_REGION: ${ssm:/pools/identity/region}
   ADMIN_POOL_ID: ${ssm:/pools/admin}
   ADMIN_POOL_CLIENT_ID: ${ssm:/pools/admin/client}
   ADMIN_IDENTITY_POOL_ID: ${ssm:/pools/identity/admin}
