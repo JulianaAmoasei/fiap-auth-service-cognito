@@ -34,18 +34,18 @@ CPFs válidos serão adicionados ao diretório de clientes caso não existam, em
 
 ### Autenticação usuários admin do sistema
 
-A inclusão e autenticação dos clientes é feita através do Cognito.
+A autenticação dos usuários admin é feita através do Cognito.
 
 ```
 POST https://<endpoint-prod>.execute-api.us-east-1.amazonaws.com/api/admin
 payload: 
-  { "email": "<email>", "password": "<mínimo 6 dígitos>" }
+  { "email": "<email>", "password": "<senha já cadastrada>" }
 response:
   200 OK
   "<string token JWT da sessão>"
 ```
 
-os dados serão adicionados ao diretório de clientes caso não existam, em seguida autenticados no sistema. CPFs de clientes já existente serão autenticados. Ambos os casos seguem o mesmo padrão para `request` e `response`.
+Nesta versão o sistema aceita apenas dados de usuários admin já cadastrados no diretório.
 
 ## Instalação
 
