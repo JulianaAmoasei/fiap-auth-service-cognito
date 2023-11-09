@@ -1,10 +1,13 @@
 import { AdminGetUserCommand,CognitoIdentityProviderClient } from '@aws-sdk/client-cognito-identity-provider';
+import { UserConfirmationData } from 'types/UserTypes';
 
-async function confirmUser(cpf: string) {
-  const client = new CognitoIdentityProviderClient({region: 'us-east-1'});
+const AWS_REGION = process.env.COGNITO_REGION ?? 'us-east-1';
+
+async function confirmUser(userData: UserConfirmationData) {
+  const client = new CognitoIdentityProviderClient({region: AWS_REGION});
   const input = {
-    UserPoolId: process.env.CLIENTES_POOL_ID,
-    Username: cpf,
+    UserPoolId: userData.UserPoolId,
+    Username: userData.Username,
   };
   const command = new AdminGetUserCommand(input);
   const response = await client.send(command);

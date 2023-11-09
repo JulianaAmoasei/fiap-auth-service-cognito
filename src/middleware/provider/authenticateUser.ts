@@ -1,65 +1,67 @@
-/* eslint-disable @typescript-eslint/no-unused-vars*/
 
 import {
   AuthenticationDetails,
   CognitoUser,
   CognitoUserPool,
 } from 'amazon-cognito-identity-js';
+import { UserDataUserPoolType } from 'types/UserTypes';
 
 import { AuthenticationDataType, IPoolData } from '../../types/CognitoInputTypes';
 import { encryptPassword } from '../auth/encryptPassword';
 import { getToken } from '../auth/getToken';
 
-async function authenticateCognitoUser(cpf: string) {
+async function authenticateCognitoUser(userDataPoolData: UserDataUserPoolType) {
   const authenticationData: AuthenticationDataType = {
-    Username: cpf,
-    Password: encryptPassword(cpf),
+    Username: userDataPoolData.Username,
+    Password: userDataPoolData.Password ? userDataPoolData.Password : encryptPassword(userDataPoolData.Username),
   };
 
   const authenticationDetails = new AuthenticationDetails(authenticationData);
 
   const poolData: IPoolData = {
-    UserPoolId: process.env.CLIENTES_POOL_ID || '',
-    ClientId: process.env.CLIENTES_POOL_CLIENT_ID || '',
+    UserPoolId: userDataPoolData.UserPoolId || '',
+    ClientId: userDataPoolData.ClientId || '',
   };
 
   const userPool = new CognitoUserPool(poolData);
   const userData = {
-    Username: cpf,
+    Username: userDataPoolData.Username,
     Pool: userPool,
   };
 
   const cognitoUser = new CognitoUser(userData);
 
-  let sessionUserAttributes;
-
   const token = new Promise((resolve, reject) => {
     cognitoUser.authenticateUser(authenticationDetails, {
-      onSuccess: (result) => {
-        getToken(result).then((res) => {
-          resolve(res)
-        })
+      onSuccess: async (result) => {
+        try {
+          const res = await getToken(result, userDataPoolData.IdentityPoolId, userDataPoolData.UserPoolId);
+          resolve(res);
+
+        } catch (err) {
+          console.error('falha na autenticação', err);
+          reject(err);
+        }
       },
       onFailure: (err: Error) => {
-        console.log('deu erro', err);
+        console.error('falha na autenticação', err);
         reject(err);
       },
-      newPasswordRequired: (userAttributes) => {
-        delete userAttributes.email_verified;
-        sessionUserAttributes = userAttributes;
-  
+      newPasswordRequired: () => {
+        // delete userAttributes.email_verified;
+
         cognitoUser.completeNewPasswordChallenge(
-          encryptPassword(cpf),
-          sessionUserAttributes,
+          authenticationData.Password,
+          null,
           {
-            onSuccess: async (_, __) => {
-              resolve(authenticateCognitoUser(cpf));
-              
+            onSuccess: async () => {
+              resolve(authenticateCognitoUser(userDataPoolData));
+
             },
             onFailure: (err: Error): void => {
               console.error('falha na criação da nova senha');
               reject(err)
-              ;
+                ;
             }
           }
         );
