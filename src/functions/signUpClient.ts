@@ -6,11 +6,15 @@ import { confirmUser } from '../middleware/provider/confirmUser';
 import { createUser } from '../middleware/provider/createUser';
 import sendResponse from '../utils/sendResponse';
 import { validateCPF } from '../utils/validateCPF';
+import { IUserRequest } from 'types/RequestTypes';
 
 async function handler (event: APIGatewayEvent) {
-  const { cpf } = JSON.parse(event.body as string);
+  const body: IUserRequest = JSON.parse(event.body as string);
+  const { cpf } = body;
+  const { attributes } = body;
+
   if (!validateCPF(cpf)) {
-    return sendResponse(400, 'email inválido');
+    return sendResponse(400, 'cpf inválido');
   }
 
   const clientData: UserConfirmationData = {
@@ -27,13 +31,13 @@ async function handler (event: APIGatewayEvent) {
 
   try {
     await confirmUser(clientData);
-    const result = await authenticateCognitoUser(clientPoolData);
-    return sendResponse(200, result);
+    const token = await authenticateCognitoUser(clientPoolData, attributes);
+    return sendResponse(200, token);
   } catch (error: unknown) {
     if (error instanceof Error && error.name === 'UserNotFoundException') {
       await createUser(clientData);
-      const result = await authenticateCognitoUser(clientPoolData);
-      return sendResponse(200, result);
+      const token = await authenticateCognitoUser(clientPoolData, attributes);
+      return sendResponse(200, { token });
     } else {
       throw new Error(error as string);
     }

@@ -1,5 +1,7 @@
 import {
   AdminCreateUserCommand,
+  UpdateUserAttributesCommand,
+  UpdateUserAttributesCommandInput,
   CognitoIdentityProviderClient,
 } from '@aws-sdk/client-cognito-identity-provider';
 import { UserConfirmationData } from 'types/UserTypes';
@@ -8,6 +10,12 @@ import { ICognitoInput } from '../../types/CognitoInputTypes';
 import { encryptPassword } from '../auth/encryptPassword';
 
 const AWS_REGION = process.env.COGNITO_REGION ?? 'us-east-1';
+
+async function addCustomAttributes(input: UpdateUserAttributesCommandInput) {
+  const client = new CognitoIdentityProviderClient({region: AWS_REGION});    
+  const command = new UpdateUserAttributesCommand(input);
+  return await client.send(command);
+}
 
 async function createUser (userData: UserConfirmationData) {
 
@@ -33,4 +41,4 @@ async function createUser (userData: UserConfirmationData) {
   }
 }
 
-export { createUser };
+export { addCustomAttributes, createUser };

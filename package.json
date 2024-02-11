@@ -17,19 +17,22 @@
   },
   "scripts": {
     "build": "npx tsc && npx tsc-alias -p tsconfig.json",
-    "lint": "eslint . --ext .ts --fix"
+    "lint": "eslint . --ext .ts --fix",
+    "deploy": "sls deploy"
   },
   "devDependencies": {
     "@types/aws-lambda": "^8.10.125",
     "@types/bcryptjs": "^2.4.5",
     "@types/jsonwebtoken": "^9.0.4",
-    "@types/node": "^20.8.7",
+    "@types/node": "^20.11.17",
     "@types/serverless": "^3.12.17",
     "@typescript-eslint/eslint-plugin": "^6.9.0",
     "@typescript-eslint/parser": "^6.9.0",
     "eslint": "^8.52.0",
     "eslint-plugin-simple-import-sort": "^10.0.0",
     "eslint-plugin-unused-imports": "^3.0.0",
+    "serverless": "^3.38.0",
+    "@serverless/sdk": "^0.5.26",
     "serverless-offline": "^13.2.0",
     "serverless-plugin-typescript": "^2.1.5",
     "ts-node": "^10.9.1",

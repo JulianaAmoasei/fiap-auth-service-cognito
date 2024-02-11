@@ -9,8 +9,10 @@ import { UserDataUserPoolType } from 'types/UserTypes';
 import { AuthenticationDataType, IPoolData } from '../../types/CognitoInputTypes';
 import { encryptPassword } from '../auth/encryptPassword';
 import { getToken } from '../auth/getToken';
+import { addCustomAttributes } from './createUser';
+import { IUserAttributes } from 'types/RequestTypes';
 
-async function authenticateCognitoUser(userDataPoolData: UserDataUserPoolType) {
+async function authenticateCognitoUser(userDataPoolData: UserDataUserPoolType, userAttributes: IUserAttributes| null = null) {
   const authenticationData: AuthenticationDataType = {
     Username: userDataPoolData.Username,
     Password: userDataPoolData.Password ? userDataPoolData.Password : encryptPassword(userDataPoolData.Username),
@@ -36,6 +38,18 @@ async function authenticateCognitoUser(userDataPoolData: UserDataUserPoolType) {
       onSuccess: async (result) => {
         try {
           const res = await getToken(result, userDataPoolData.IdentityPoolId, userDataPoolData.UserPoolId);
+          if (userAttributes) {
+            const updatedAttributes = await addCustomAttributes({
+              UserAttributes: Object.entries(userAttributes).map(([key, value]) => {
+                return {
+                  Name: key,
+                  Value: value,
+                }
+              }),
+              AccessToken: res,
+            })
+            console.log(updatedAttributes)
+          }
           resolve(res);
 
         } catch (err) {
@@ -55,8 +69,7 @@ async function authenticateCognitoUser(userDataPoolData: UserDataUserPoolType) {
           null,
           {
             onSuccess: async () => {
-              resolve(authenticateCognitoUser(userDataPoolData));
-
+              resolve(authenticateCognitoUser(userDataPoolData, userAttributes));
             },
             onFailure: (err: Error): void => {
               console.error('falha na criação da nova senha');
