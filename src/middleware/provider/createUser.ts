@@ -3,16 +3,34 @@ import {
   UpdateUserAttributesCommand,
   UpdateUserAttributesCommandInput,
   CognitoIdentityProviderClient,
+  DeleteUserAttributesCommand,
+  DeleteUserAttributesCommandInput,
+  DeleteUserCommand,
+  DeleteUserCommandInput,
 } from '@aws-sdk/client-cognito-identity-provider';
 import { UserConfirmationData } from 'types/UserTypes';
 
 import { ICognitoInput } from '../../types/CognitoInputTypes';
 import { encryptPassword } from '../auth/encryptPassword';
+import { USER_ATTRIBUTES } from 'utils/attributesList';
 
 const AWS_REGION = process.env.COGNITO_REGION ?? 'us-east-1';
 
+const client = new CognitoIdentityProviderClient({region: AWS_REGION});    
+
+async function deleteClient(input: DeleteUserCommandInput) {
+  const command = new DeleteUserCommand(input);
+  const response = await client.send(command);
+  console.log(response);
+}
+
+async function removeCustomAttributes(input: DeleteUserAttributesCommandInput) {
+  const command = new DeleteUserAttributesCommand(input);
+  const response = await client.send(command);
+  console.log(response);
+}
+
 async function addCustomAttributes(input: UpdateUserAttributesCommandInput) {
-  const client = new CognitoIdentityProviderClient({region: AWS_REGION});    
   const command = new UpdateUserAttributesCommand(input);
   return await client.send(command);
 }
@@ -27,7 +45,6 @@ async function createUser (userData: UserConfirmationData) {
   };
 
   try {
-    const client = new CognitoIdentityProviderClient({region: AWS_REGION});    
     const command = new AdminCreateUserCommand(input);
     const response = await client.send(command);
     if (response.User?.Username) {
@@ -41,4 +58,4 @@ async function createUser (userData: UserConfirmationData) {
   }
 }
 
-export { addCustomAttributes, createUser };
+export { addCustomAttributes, createUser, deleteClient, removeCustomAttributes };

@@ -14,3 +14,7 @@ export interface IAuthUserRequest {
 export interface IUserRequest extends IAuthUserRequest {
   attributes?: IUserAttributes
 }
+
+export interface IUserRemoveRequest extends IAuthUserRequest {
+  removeUser: boolean
+}

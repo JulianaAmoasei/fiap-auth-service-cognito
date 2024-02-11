@@ -64,6 +64,13 @@ functions:
       - httpApi:
           path: /api/client
           method: post
+  
+  exclusionClient:
+    handler: src/functions/exclusionClient.handler
+    events:
+      - httpApi:
+          path: /api/client/exclusion
+          method: post
 
 custom:
   serverless-offline:
