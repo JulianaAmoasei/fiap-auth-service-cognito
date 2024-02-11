@@ -57,6 +57,13 @@ functions:
       - httpApi:
           path: /api/admin
           method: post
+  
+  signInClient:
+    handler: src/functions/signInClient.handler
+    events:
+      - httpApi:
+          path: /api/client
+          method: post
 
 custom:
   serverless-offline:

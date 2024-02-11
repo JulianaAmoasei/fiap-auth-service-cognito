@@ -5,7 +5,12 @@ export interface IUserAttributes {
   nickname?: string
 }
 
-export interface IUserRequest {
+
+export interface IAuthUserRequest {
   cpf: string,
+  password: string
+}
+
+export interface IUserRequest extends IAuthUserRequest {
   attributes?: IUserAttributes
 }

@@ -65,10 +65,11 @@ async function authenticateCognitoUser(userDataPoolData: UserDataUserPoolType, u
         // delete userAttributes.email_verified;
 
         cognitoUser.completeNewPasswordChallenge(
-          authenticationData.Password,
+          userDataPoolData.NewPassword ?? authenticationData.Password,
           null,
           {
             onSuccess: async () => {
+              userDataPoolData.Password = userDataPoolData.NewPassword;
               resolve(authenticateCognitoUser(userDataPoolData, userAttributes));
             },
             onFailure: (err: Error): void => {
