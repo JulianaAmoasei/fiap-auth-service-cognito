@@ -12,7 +12,6 @@ import { UserConfirmationData } from 'types/UserTypes';
 
 import { ICognitoInput } from '../../types/CognitoInputTypes';
 import { encryptPassword } from '../auth/encryptPassword';
-import { USER_ATTRIBUTES } from 'utils/attributesList';
 
 const AWS_REGION = process.env.COGNITO_REGION ?? 'us-east-1';
 
@@ -38,7 +37,7 @@ async function addCustomAttributes(input: UpdateUserAttributesCommandInput) {
 async function createUser (userData: UserConfirmationData) {
 
   const input: ICognitoInput = {
-    UserPoolId: userData.UserPoolId || '',
+    UserPoolId: userData.UserPoolId ?? '',
     TemporaryPassword: encryptPassword(userData.Username),
     Username: userData.Username,
     MessageAction: 'SUPPRESS',  

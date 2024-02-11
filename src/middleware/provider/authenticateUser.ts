@@ -9,7 +9,7 @@ import { UserDataUserPoolType } from 'types/UserTypes';
 import { AuthenticationDataType, IPoolData } from '../../types/CognitoInputTypes';
 import { encryptPassword } from '../auth/encryptPassword';
 import { getToken } from '../auth/getToken';
-import { addCustomAttributes } from './createUser';
+import { addCustomAttributes } from './cognitoOperations';
 import { IUserAttributes } from 'types/RequestTypes';
 
 async function authenticateCognitoUser(userDataPoolData: UserDataUserPoolType, userAttributes: IUserAttributes| null = null) {
@@ -21,8 +21,8 @@ async function authenticateCognitoUser(userDataPoolData: UserDataUserPoolType, u
   const authenticationDetails = new AuthenticationDetails(authenticationData);
 
   const poolData: IPoolData = {
-    UserPoolId: userDataPoolData.UserPoolId || '',
-    ClientId: userDataPoolData.ClientId || '',
+    UserPoolId: userDataPoolData.UserPoolId ?? '',
+    ClientId: userDataPoolData.ClientId ?? '',
   };
 
   const userPool = new CognitoUserPool(poolData);
@@ -62,8 +62,6 @@ async function authenticateCognitoUser(userDataPoolData: UserDataUserPoolType, u
         reject(err);
       },
       newPasswordRequired: () => {
-        // delete userAttributes.email_verified;
-
         cognitoUser.completeNewPasswordChallenge(
           userDataPoolData.NewPassword ?? authenticationData.Password,
           null,

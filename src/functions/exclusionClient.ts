@@ -3,7 +3,7 @@ import { APIGatewayEvent } from 'aws-lambda';
 import sendResponse from '../utils/sendResponse';
 import { IUserRemoveRequest } from 'types/RequestTypes';
 import { USER_ATTRIBUTES } from '../utils/attributesList';
-import { deleteClient, removeCustomAttributes } from '../middleware/provider/createUser';
+import { deleteClient, removeCustomAttributes } from '../middleware/provider/cognitoOperations';
 
 async function handler(event: APIGatewayEvent) {
   try {

@@ -2,7 +2,7 @@ import { APIGatewayEvent } from 'aws-lambda';
 import { UserConfirmationData, UserDataUserPoolType } from 'types/UserTypes';
 
 import { authenticateCognitoUser } from '../middleware/provider/authenticateUser';
-import { createUser } from '../middleware/provider/createUser';
+import { createUser } from '../middleware/provider/cognitoOperations';
 import sendResponse from '../utils/sendResponse';
 import { validateCPF } from '../utils/validateCPF';
 import { IUserRequest } from 'types/RequestTypes';
