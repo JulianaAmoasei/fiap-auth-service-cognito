@@ -30,8 +30,8 @@ async function handler(event: APIGatewayEvent) {
 
   try {
     await confirmUser(adminData);
-    const result = await authenticateCognitoUser(adminPoolData);
-    return sendResponse(200, result);
+    const token = await authenticateCognitoUser(adminPoolData);
+    return sendResponse(200, { token });
   } catch (err: unknown) {
     console.error(err);
     return sendResponse(400, { error: err });
