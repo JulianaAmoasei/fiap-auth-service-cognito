@@ -1,9 +1,9 @@
 import { APIGatewayEvent } from 'aws-lambda';
+import { IAuthUserRequest } from 'types/RequestTypes';
 
 import { authClient } from '../middleware/provider/confirmUser';
 import sendResponse from '../utils/sendResponse';
 import { validateCPF } from '../utils/validateCPF';
-import { IAuthUserRequest } from 'types/RequestTypes';
 
 async function handler (event: APIGatewayEvent) {
   const body: IAuthUserRequest = JSON.parse(event.body as string);
@@ -17,7 +17,8 @@ async function handler (event: APIGatewayEvent) {
     const token = await authClient(cpf, password);
     return sendResponse(200, { token });
   } catch (error: unknown) {
-    return sendResponse(401, { mensagem: 'Falha au autenticar usuario' });
+    console.log(error);
+    return sendResponse(401, { mensagem: 'Falha na autenticar do usuario' });
   }
 }
 
