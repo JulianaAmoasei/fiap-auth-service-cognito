@@ -4,35 +4,11 @@ frameworkVersion: "3"
 useDotenv: true
 
 provider:
-  httpApi:
-    cors:
-      allowedOrigins:
-        - '*'
-      allowedHeaders:
-        - Content-Type
-        - Access-Control-Allow-Origin
-        - Access-Control-Allow-Headers
-        - Access-Control-Allow-Methods
-      allowedMethods:
-        - GET
-        - POST
-        - PUT
-  logs:
-    httpApi: true
-
   name: aws
   runtime: nodejs18.x
-  timeout: 30
+  timeout: 60
   region: us-east-1
   stage: dev
-  iamRoleStatements:
-  - Effect: Allow
-    Action:
-      - cognito-idp:AdminInitiateAuth
-      - cognito-idp:AdminCreateUser
-      - cognito-idp:AdminSetUserPassword
-      - cognito-idp:AdminGetUser
-    Resource: '*'
  
   environment:
     CLIENTES_POOL_ID: ${self:custom.CLIENTES_POOL_ID}
@@ -44,6 +20,8 @@ provider:
 
 
 functions:
+  authorization:
+    handler: src/functions/authorizations/auth.handler
   signUpClient:
     handler: src/functions/signUpClient.handler
     events:
