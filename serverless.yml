@@ -3,13 +3,30 @@ service: auth-service-cognito
 frameworkVersion: "3"
 useDotenv: true
 
+plugins:
+  - serverless-offline
+  - serverless-plugin-typescript
+
+custom:
+  serverless-offline:
+    httpPort: 3001
+  CLIENTES_POOL_ID: ${ssm:/fiap-tech/cognito/client/user-pool/id}
+  CLIENTES_POOL_CLIENT_ID: ${ssm:/fiap-tech/cognito/client/user-pool/client-id}
+  CLIENTES_IDENTITY_POOL_ID: ${ssm:/fiap-tech/cognito/client/client-identity-pool/id}
+  COGNITO_REGION: ${ssm:/fiap-tech/cognito/region}
+  ADMIN_POOL_ID: ${ssm:/fiap-tech/cognito/admin/user-pool/id}
+  ADMIN_POOL_CLIENT_ID: ${ssm:/fiap-tech/cognito/admin/user-pool/client-id}
+  ADMIN_IDENTITY_POOL_ID: ${ssm:/fiap-tech/cognito/admin/client-identity-pool/id}
+  API_GATEWAY_API_ID: ${ssm:/fiap-tech/api_gateway/api_id}
+
 provider:
   name: aws
   runtime: nodejs18.x
   timeout: 60
   region: us-east-1
   stage: dev
- 
+  httpApi:
+    id: ${self:custom.API_GATEWAY_API_ID}
   environment:
     CLIENTES_POOL_ID: ${self:custom.CLIENTES_POOL_ID}
     CLIENTES_POOL_CLIENT_ID: ${self:custom.CLIENTES_POOL_CLIENT_ID}
@@ -19,6 +36,9 @@ provider:
     ADMIN_IDENTITY_POOL_ID: ${self:custom.ADMIN_IDENTITY_POOL_ID}
 
 
+package:
+  excludeDevDependencies: true
+
 functions:
   authorization:
     handler: src/functions/authorizations/auth.handler
@@ -26,42 +46,26 @@ functions:
     handler: src/functions/signUpClient.handler
     events:
       - httpApi:
-          path: /api/signup
+          path: /usuario/cadastro
           method: post
 
   signUpAdmin:
     handler: src/functions/signUpAdmin.handler
     events:
       - httpApi:
-          path: /api/admin
+          path: /administrador/login
           method: post
-  
+
   signInClient:
     handler: src/functions/signInClient.handler
     events:
       - httpApi:
-          path: /api/client
+          path: /usuario/login
           method: post
-  
+
   exclusionClient:
     handler: src/functions/exclusionClient.handler
     events:
       - httpApi:
-          path: /api/client/exclusion
+          path: /usuario/exclusao
           method: post
-
-custom:
-  serverless-offline:
-    httpPort: 3001
-  CLIENTES_POOL_ID: ${ssm:/pools/client}
-  CLIENTES_POOL_CLIENT_ID: ${ssm:/pools/client/client}
-  CLIENTES_IDENTITY_POOL_ID: ${ssm:/pools/identity/client}
-  COGNITO_REGION: ${ssm:/pools/identity/region}
-  ADMIN_POOL_ID: ${ssm:/pools/admin}
-  ADMIN_POOL_CLIENT_ID: ${ssm:/pools/admin/client}
-  ADMIN_IDENTITY_POOL_ID: ${ssm:/pools/identity/admin}
-
-
-plugins:
-  - serverless-offline
-  - serverless-plugin-typescript
