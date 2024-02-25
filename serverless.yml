@@ -18,11 +18,12 @@ custom:
   ADMIN_POOL_CLIENT_ID: ${ssm:/fiap-tech/cognito/admin/user-pool/client-id}
   ADMIN_IDENTITY_POOL_ID: ${ssm:/fiap-tech/cognito/admin/client-identity-pool/id}
   API_GATEWAY_API_ID: ${ssm:/fiap-tech/api_gateway/api_id}
+  SQS_NOTIFICATION: ${ssm:/fiap-tech/sqs/arn}
 
 provider:
   name: aws
   runtime: nodejs18.x
-  timeout: 60
+  timeout: 30
   region: us-east-1
   stage: dev
   httpApi:
@@ -34,7 +35,11 @@ provider:
     ADMIN_POOL_ID: ${self:custom.ADMIN_POOL_ID}
     ADMIN_POOL_CLIENT_ID: ${self:custom.ADMIN_POOL_CLIENT_ID}
     ADMIN_IDENTITY_POOL_ID: ${self:custom.ADMIN_IDENTITY_POOL_ID}
-
+    SQS_NOTIFICATION: ${self:custom.SQS_NOTIFICATION}
+    EMAIL_HOST: ${env:EMAIL_HOST}
+    EMAIL_FROM: ${env:EMAIL_FROM}
+    EMAIL_USER: ${env:EMAIL_USER}
+    EMAIL_PASS: ${env:EMAIL_PASS}
 
 package:
   excludeDevDependencies: true
@@ -69,3 +74,8 @@ functions:
       - httpApi:
           path: /usuario/exclusao
           method: post
+
+  notification:
+    handler: src/functions/notificacao/sendEmail.handler
+    events:	
+      - sqs: ${self:custom.SQS_NOTIFICATION}
