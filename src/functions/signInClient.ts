@@ -17,6 +17,7 @@ async function handler (event: APIGatewayEvent) {
     const token = await authClient(cpf, password);
     return sendResponse(200, { token });
   } catch (error: unknown) {
+    console.log('error');
     console.log(error);
     return sendResponse(401, { mensagem: 'Falha na autenticar do usuario' });
   }

@@ -40,6 +40,11 @@ provider:
     EMAIL_FROM: ${env:EMAIL_FROM}
     EMAIL_USER: ${env:EMAIL_USER}
     EMAIL_PASS: ${env:EMAIL_PASS}
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - cognito-idp:*
+      Resource: "*"
 
 package:
   excludeDevDependencies: true

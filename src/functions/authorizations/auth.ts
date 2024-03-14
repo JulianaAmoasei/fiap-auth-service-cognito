@@ -52,7 +52,8 @@ async function handler(event: APIGatewayRequestAuthorizerEventV2) {
   const response = {
     isAuthorized: false,
     context: {
-      typeUser: ''
+      typeUser: '',
+      'x-client-id': ''
     },
   };
 
@@ -75,7 +76,7 @@ async function handler(event: APIGatewayRequestAuthorizerEventV2) {
     }
 
     console.log(`Decoded Token: ${JSON.stringify(decodedToken)}`);
-
+    response.context['x-client-id'] = decodedToken.client_id;
 
     const PoolRegex = /([^/]+)$/;
     const getPoolIdMatch = decodedToken?.iss?.match(PoolRegex);

@@ -52,8 +52,8 @@ async function createUser (userData: UserConfirmationData) {
       throw new Error('usuário não criado')
     }
  } catch (error: unknown) {
-    console.error(error, 'deu algum erro');
-    throw new Error(error as string);
+    console.error(error);
+    throw error;
   }
 }
 
