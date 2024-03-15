@@ -16,7 +16,7 @@ export interface ICognitoInput extends AdminCreateUserRequest {
   UserPoolId: string;
   TemporaryPassword: string;
   Username: string;
-  MessageAction?: 'RESEND' | 'SUPPRESS' | undefined;
+  MessageAction?: 'RESEND' | 'SUPPRESS';
   DesiredDeliveryMediums?: DeliveryMediumType[];
 }
 

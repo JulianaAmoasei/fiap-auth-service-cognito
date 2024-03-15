@@ -3,37 +3,31 @@ service: auth-service-cognito
 frameworkVersion: "3"
 useDotenv: true
 
-provider:
-  httpApi:
-    cors:
-      allowedOrigins:
-        - '*'
-      allowedHeaders:
-        - Content-Type
-        - Access-Control-Allow-Origin
-        - Access-Control-Allow-Headers
-        - Access-Control-Allow-Methods
-      allowedMethods:
-        - GET
-        - POST
-        - PUT
-  logs:
-    httpApi: true
+plugins:
+  - serverless-offline
+  - serverless-plugin-typescript
 
+custom:
+  serverless-offline:
+    httpPort: 3001
+  CLIENTES_POOL_ID: ${ssm:/fiap-tech/cognito/client/user-pool/id}
+  CLIENTES_POOL_CLIENT_ID: ${ssm:/fiap-tech/cognito/client/user-pool/client-id}
+  CLIENTES_IDENTITY_POOL_ID: ${ssm:/fiap-tech/cognito/client/client-identity-pool/id}
+  COGNITO_REGION: ${ssm:/fiap-tech/cognito/region}
+  ADMIN_POOL_ID: ${ssm:/fiap-tech/cognito/admin/user-pool/id}
+  ADMIN_POOL_CLIENT_ID: ${ssm:/fiap-tech/cognito/admin/user-pool/client-id}
+  ADMIN_IDENTITY_POOL_ID: ${ssm:/fiap-tech/cognito/admin/client-identity-pool/id}
+  API_GATEWAY_API_ID: ${ssm:/fiap-tech/api_gateway/api_id}
+  SQS_NOTIFICATION: ${ssm:/fiap-tech/sqs/arn}
+
+provider:
   name: aws
   runtime: nodejs18.x
   timeout: 30
   region: us-east-1
   stage: dev
-  iamRoleStatements:
-  - Effect: Allow
-    Action:
-      - cognito-idp:AdminInitiateAuth
-      - cognito-idp:AdminCreateUser
-      - cognito-idp:AdminSetUserPassword
-      - cognito-idp:AdminGetUser
-    Resource: '*'
- 
+  httpApi:
+    id: ${self:custom.API_GATEWAY_API_ID}
   environment:
     CLIENTES_POOL_ID: ${self:custom.CLIENTES_POOL_ID}
     CLIENTES_POOL_CLIENT_ID: ${self:custom.CLIENTES_POOL_CLIENT_ID}
@@ -41,35 +35,52 @@ provider:
     ADMIN_POOL_ID: ${self:custom.ADMIN_POOL_ID}
     ADMIN_POOL_CLIENT_ID: ${self:custom.ADMIN_POOL_CLIENT_ID}
     ADMIN_IDENTITY_POOL_ID: ${self:custom.ADMIN_IDENTITY_POOL_ID}
+    SQS_NOTIFICATION: ${self:custom.SQS_NOTIFICATION}
+    EMAIL_HOST: ${env:EMAIL_HOST}
+    EMAIL_FROM: ${env:EMAIL_FROM}
+    EMAIL_USER: ${env:EMAIL_USER}
+    EMAIL_PASS: ${env:EMAIL_PASS}
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - cognito-idp:*
+      Resource: "*"
 
+package:
+  excludeDevDependencies: true
 
 functions:
+  authorization:
+    handler: src/functions/authorizations/auth.handler
   signUpClient:
     handler: src/functions/signUpClient.handler
     events:
       - httpApi:
-          path: /api/signup
+          path: /usuario/cadastro
           method: post
 
   signUpAdmin:
     handler: src/functions/signUpAdmin.handler
     events:
       - httpApi:
-          path: /api/admin
+          path: /administrador/login
           method: post
 
-custom:
-  serverless-offline:
-    httpPort: 3001
-  CLIENTES_POOL_ID: ${ssm:/pools/client}
-  CLIENTES_POOL_CLIENT_ID: ${ssm:/pools/client/client}
-  CLIENTES_IDENTITY_POOL_ID: ${ssm:/pools/identity/client}
-  COGNITO_REGION: ${ssm:/pools/identity/region}
-  ADMIN_POOL_ID: ${ssm:/pools/admin}
-  ADMIN_POOL_CLIENT_ID: ${ssm:/pools/admin/client}
-  ADMIN_IDENTITY_POOL_ID: ${ssm:/pools/identity/admin}
+  signInClient:
+    handler: src/functions/signInClient.handler
+    events:
+      - httpApi:
+          path: /usuario/login
+          method: post
 
+  exclusionClient:
+    handler: src/functions/exclusionClient.handler
+    events:
+      - httpApi:
+          path: /usuario/exclusao
+          method: post
 
-plugins:
-  - serverless-offline
-  - serverless-plugin-typescript
+  notification:
+    handler: src/functions/notificacao/sendEmail.handler
+    events:	
+      - sqs: ${self:custom.SQS_NOTIFICATION}

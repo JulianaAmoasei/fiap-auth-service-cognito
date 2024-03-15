@@ -24,7 +24,15 @@ A inclusão e autenticação dos clientes é feita através do Cognito.
 ```
 POST https://<endpoint-prod>.execute-api.us-east-1.amazonaws.com/api/signup
 payload: 
-  { "cpf": "<cpf válido no formato XXXXXXXXXXX>" }
+  {
+    "cpf": "<cpf válido no formato XXXXXXXXXXX>",
+    "attributes": {
+        "address": "Rua teste, 10 - Jardim Teste",
+        "email": "teste@teste.com",
+        "phone_number": "+11111111111",
+        "nickname": "teste"
+  }
+}
 response:
   200 OK
   "<string token JWT da sessão>"
