@@ -22,15 +22,15 @@ interface DecodedToken {
 }
 
 const ADMIN_ENDPOINTS = [
-  'GET/pedido/iniciar-preparo',
-  'GET/pedido/finalizar-preparo',
-  'GET/pedido/entregar-pedido',
-  'PUT/produto',
-  'POST/produto',
-  'DELETE/produto',
-  'PUT/categoria',
-  'POST/categoria',
-  'DELETE/categoria',
+  'GET/api/pedido/iniciar-preparo',
+  'GET/api/pedido/finalizar-preparo',
+  'GET/api/pedido/entregar-pedido',
+  'PUT/api/produto',
+  'POST/api/produto',
+  'DELETE/api/produto',
+  'PUT/api/categoria',
+  'POST/api/categoria',
+  'DELETE/api/categoria',
 ];
 
 async function validateToken(
