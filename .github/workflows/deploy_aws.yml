@@ -39,5 +39,11 @@ jobs:
           role-duration-seconds: 1200
 
       - name: Deploy to Lambda
+        env:
+          EMAIL_HOST: ${{ secrets.EMAIL_HOST }}
+          EMAIL_FROM: ${{ secrets.EMAIL_FROM }}
+          EMAIL_USER: ${{ secrets.EMAIL_USER }}
+          EMAIL_PASS: ${{ secrets.EMAIL_PASS }}
+
         run: |
           npx sls deploy
